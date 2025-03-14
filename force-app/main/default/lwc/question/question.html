@@ -1,0 +1,32 @@
+<template>
+    <lightning-card title={label.questionTitle}>
+        <section class="slds-p-around_medium">
+
+            <h1>{label.contactInformation}</h1>
+
+            <section class="slds-grid slds-gutters">
+                <section class="slds-col">
+                    <lightning-input label={label.firstName} required onchange={handleFirstNameChange}></lightning-input>
+                </section>
+                <section class="slds-col">
+                    <lightning-input label={label.lastName} required onchange={handleLastNameChange}></lightning-input>
+                </section>
+            </section>
+
+            <lightning-input type="email" label="Email" onchange={handleEmailChange} required="true"></lightning-input>
+
+            <h1 class="slds-m-top_medium">{label.caseInformation}</h1>
+
+            <lightning-input label={label.subject} required onchange={handleSubjectChange}></lightning-input>
+            <lightning-textarea label={label.description} required onchange={handleDescriptionChange}></lightning-textarea>
+
+            <section class="slds-m-top_medium slds-text-align_right">
+
+                <lightning-button variant="brand" label={label.submit} onclick={handleSubmit} disabled={isLoading}>
+                </lightning-button>
+
+            </section>
+
+        </section>
+    </lightning-card>
+</template>

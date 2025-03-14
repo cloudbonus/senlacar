@@ -1,0 +1,35 @@
+<template>
+    <lightning-card title={labels.network}>
+        <div class="slds-p-around_medium">
+            <header class="slds-grid slds-gutters">
+                <section class="slds-col">
+                    <lightning-combobox name="country" label={labels.country} value={selectedCountry}
+                        placeholder={labels.selectCountry} options={countries} onchange={handleCountry}> </lightning-combobox>
+                </section>
+
+                <section class="slds-col">
+                    <lightning-combobox name="city" label={labels.city} value={selectedCity} placeholder={labels.selectCity}
+                        options={cities} onchange={handleCity}> </lightning-combobox>
+                </section>
+
+                <section class="slds-col">
+                    <lightning-radio-group name="recordType" label={labels.autocenterOT} options={recordTypeOptions}
+                        value={selectedRecordType} onchange={handleRecordTypeChange} required>
+                    </lightning-radio-group>
+                </section>
+
+                <section class="slds-col slds-text-align_center">
+                    <lightning-button variant="brand" label={labels.show} onclick={handleShow}
+                        disabled={isButtonDisabled}></lightning-button>
+                </section>
+            </header>
+
+            <main if:true={isMarkersEmpty}>
+                <section class="slds-p-around_medium">
+                    <lightning-map map-markers={markers}>
+                    </lightning-map>
+                </section>
+            </main>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,27 @@
+<template>
+    <lightning-card>
+        <template if:true={products}>
+            <lightning-layout multiple-rows>
+                <template for:each={products} for:item="product">
+                    <lightning-layout-item key={product.Id} size="4" class="slds-p-around_small">
+                        <div class="product-container">
+                            <img class="product-img" src={product.Image_Url__c} alt={product.Lineup__c}/>
+                            <lightning-button label={product.Lineup__c} 
+                                              variant="brand" 
+                                              onclick={handleOpenModal} 
+                                              data-id={product.Id}
+                                              class="product-button">
+                            </lightning-button>
+                        </div>
+                    </lightning-layout-item>
+                </template>
+            </lightning-layout>
+        </template>
+    </lightning-card>
+
+    <template if:true={isModalOpen}>
+        <c-car-detail products={selectedProduct} onclose={handleCloseModal}></c-car-detail>
+    </template>
+
+</template>
+
