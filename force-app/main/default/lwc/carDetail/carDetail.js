@@ -168,14 +168,14 @@ export default class CarDetail extends LightningElement {
     }
 
     resetForm() {
-        lead = {
+        this.lead = {
             firstName: '',
             lastName: '',
             company: 'Individual',
             email: ''
         };
 
-        this.template.querySelector('lightning-input').forEach(input => {
+        this.template.querySelectorAll('lightning-input').forEach(input => {
             input.value = '';
         });
     }

@@ -1,12 +1,14 @@
 public class OpportunityEmailJob implements Queueable {
-    private Opportunity opp;
-
-    public OpportunityEmailJob(Opportunity opp) {
-        this.opp = opp;
+    private List<Opportunity> opps;
+    
+    public OpportunityEmailJob(List<Opportunity> opps) {
+        this.opps = opps;
     }
-
+    
     public void execute(QueueableContext context) {
         OpportunityEmailService emailService = new OpportunityEmailService();
-        emailService.sendEmail(opp);
+        for (Opportunity opp : opps) {
+            emailService.sendEmail(opp);
+        }
     }
 }
