@@ -1,45 +1,115 @@
-<template>
-    <div class="modal-backdrop">
-        <div class="modal-container">
-            <header class="modal-header slds-text-heading_medium">
-                <p>{productTemplate.Lineup__c}</p>
-            </header>
-            <main class="modal-body">
-                <template if:true={productTemplate}>
-                    <p>{productTemplate.Description}</p>
+<template >
+    <template if:true={productTemplate}>
+        <div class="modal-backdrop">
+            <div class="modal-container">
 
-                    <lightning-combobox class="slds-p-vertical_medium" name="equipments"
-                        label={label.configurationHint} value={selectedEquipment}
-                        options={equipments} onchange={handleEquipmentChange} placeholder={label.selectConfiguration}>
-                    </lightning-combobox>
+            <template if:true={showTestDriveForm}>
+                
+                <header class="modal-header slds-text-heading_medium">
+                    <p>Test Drive Request</p>
+                </header>
+                <main class="modal-body">
+                    <lightning-input label="First Name" required value={firstName}
+                        onchange={handleFirstNameChange}></lightning-input>
+                    <lightning-input label="Last Name" required value={lastName}
+                        onchange={handleLastNameChange}></lightning-input>
+                    <lightning-input label="Company" value={company} onchange={handleCompanyChange}></lightning-input>
+                    <lightning-input type="email" label="Email" required value={email}
+                        onchange={handleEmailChange}></lightning-input>
 
+                    <div if:true={error} class="slds-text-color_error slds-m-top_small">
+                        {error}
+                    </div>
+                </main>
+                <footer class="modal-footer">
+                    <lightning-button label="Cancel" variant="neutral" onclick={handleCancel} disabled={isLoading}></lightning-button>
+                    <lightning-button label="Submit" variant="brand" onclick={handleSubmit} disabled={isLoading}></lightning-button>
+                </footer>
+            </template>
 
-                    <section class="price-container">
-                        <template if:true={selectedEquipment}>
-                            <template lwc:if={isPriceAvailable}>
-                                <section class="slds-grid">
-                                    <p class="slds-text-heading_medium slds-col"><strong>{label.price}:</strong> {selectedProductPrice}</p>
+            <template if:false={showTestDriveForm}>
+                
+                <header class="modal-header slds-text-heading_medium">
+                    <p>{productTemplate.Lineup__c}</p>
+                </header>
+                <main class="modal-body">
+                    <template if:true={productTemplate}>
+                        <p>{productTemplate.Description}</p>
 
-                                    <div class="slds-col slds-text-align_right">
-                                        <lightning-button label={label.downloadPfd} variant="brand"
-                                            onclick={handleDownloadPdf}>
-                                        </lightning-button>
-                                    </div>
-                                </section>
+                        <lightning-combobox class="slds-p-vertical_medium" name="equipments"
+                            label={label.configurationHint} value={selectedEquipment} options={equipments}
+                            onchange={handleEquipmentChange} placeholder={label.selectConfiguration}>
+                        </lightning-combobox>
+
+                        <section class="price-container">
+                            <template if:true={selectedEquipment}>
+                                <template lwc:if={isPriceAvailable}>
+                                    <section class="slds-grid">
+                                        <p class="slds-text-heading_medium slds-col"><strong>{label.price}:</strong>
+                                            {selectedProductPrice}</p>
+                                        <div class="slds-col slds-text-align_right">
+                                            <lightning-button label={label.downloadPfd} variant="brand"
+                                                onclick={handleDownloadPdf}>
+                                            </lightning-button>
+                                            <lightning-button label="Order Test Drive" variant="brand"
+                                                onclick={handleTestDrive} class="slds-m-left_x-small">
+                                            </lightning-button>
+                                        </div>
+                                    </section>
+                                </template>
+                                <template lwc:else>
+                                    <p class="slds-text-heading_medium"><strong>{label.priceAbsence}</strong></p>
+                                </template>
                             </template>
-                            <template lwc:else>
-                                <p class="slds-text-heading_medium"><strong>{label.priceAbsence}</strong></p>
+                        </section>
+                    </template>
+                </main>
+                <footer class="modal-footer">
+                    <lightning-button label="Test Drive" variant="neutral" onclick={handleTestDrive}></lightning-button>
+                    <lightning-button label={label.close} variant="neutral" onclick={handleClose}></lightning-button>
+                </footer>
+            </template>
+
+                <!-- <header class="modal-header slds-text-heading_medium">
+                    <p>{productTemplate.Lineup__c}</p>
+                </header>
+                <main class="modal-body">
+                    <template if:true={productTemplate}>
+                        <p>{productTemplate.Description}</p>
+    
+                        <lightning-combobox class="slds-p-vertical_medium" name="equipments"
+                            label={label.configurationHint} value={selectedEquipment}
+                            options={equipments} onchange={handleEquipmentChange} placeholder={label.selectConfiguration}>
+                        </lightning-combobox>
+    
+    
+                        <section class="price-container">
+                            <template if:true={selectedEquipment}>
+                                <template lwc:if={isPriceAvailable}>
+                                    <section class="slds-grid">
+                                        <p class="slds-text-heading_medium slds-col"><strong>{label.price}:</strong> {selectedProductPrice}</p>
+    
+                                        <div class="slds-col slds-text-align_right">
+                                            <lightning-button label={label.downloadPfd} variant="brand"
+                                                onclick={handleDownloadPdf}>
+                                            </lightning-button>
+                                        </div>
+                                    </section>
+                                </template>
+                                <template lwc:else>
+                                    <p class="slds-text-heading_medium"><strong>{label.priceAbsence}</strong></p>
+                                </template>
                             </template>
-                        </template>
-                    </section>
-                </template>
-                <template if:true={error}>
-                    <p>Error loading data</p>
-                </template>
-            </main>
-            <footer class="modal-footer">
-                <lightning-button label={label.close} variant="neutral" onclick={handleClose}></lightning-button>
-            </footer>
+                        </section>
+                    </template>
+                    <template if:true={error}>
+                        <p>Error loading data</p>
+                    </template>
+                </main>
+                <footer class="modal-footer">
+                    <lightning-button label={label.close} variant="neutral" onclick={handleClose}></lightning-button>
+                </footer> -->
+            </div>
         </div>
-    </div>
+    </template>
 </template>

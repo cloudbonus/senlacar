@@ -1,7 +1,14 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, wire } from 'lwc';
 import getProducts from '@salesforce/apex/ProductController.getProducts';
+import { subscribe, MessageContext } from 'lightning/messageService';
 
+import CURRENCY_CHANNEL from '@salesforce/messageChannel/CurrencyMessageChannel__c';
 export default class CarList extends LightningElement {
+    
+    @wire(MessageContext)
+    messageContext;
+    currentCurrency = 'usd';
+
     _products;
     _productsByLineup
 
@@ -24,9 +31,8 @@ export default class CarList extends LightningElement {
             }
         }
 
-        this.selectedProduct = selectedLineup || null;
-
-        if (this.selectedProduct) {
+        if (selectedLineup) {
+            this.selectedProduct = selectedLineup;
             this.isModalOpen = true;
         }
     }
@@ -37,6 +43,15 @@ export default class CarList extends LightningElement {
     }
 
     async connectedCallback() {
+        const storedCurrency = localStorage.getItem('selectedCurrency');
+
+        if (storedCurrency) {
+
+            this.currentCurrency = storedCurrency;
+
+        }
+
+        this.subscribeToMessageChannel();
         await this.fetchAllProducts();
     }
 
@@ -67,5 +82,27 @@ export default class CarList extends LightningElement {
         } catch (error) {
             console.error('Error fetching products:', error);
         }
+    }
+
+    subscribeToMessageChannel() {
+
+        this.subscription = subscribe(
+
+            this.messageContext,
+
+            CURRENCY_CHANNEL,
+
+            (message) => this.handleMessage(message)
+
+        );
+
+    }
+
+    handleMessage(message) {
+
+        this.currentCurrency = message.currency;
+
+        console.log(JSON.stringify(this.currentCurrency));
+
     }
 }

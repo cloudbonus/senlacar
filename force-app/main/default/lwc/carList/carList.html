@@ -20,7 +20,7 @@
     </lightning-card>
 
     <template if:true={isModalOpen}>
-        <c-car-detail products={selectedProduct} onclose={handleCloseModal}></c-car-detail>
+        <c-car-detail products={selectedProduct} current-currency={currentCurrency} onclose={handleCloseModal}></c-car-detail>
     </template>
 
 </template>

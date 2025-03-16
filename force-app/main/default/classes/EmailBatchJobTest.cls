@@ -1,24 +1,24 @@
 @isTest
-class EmailBatchSchedulerTest {
+class EmailBatchJobTest {
     
     @isTest static void testScheduleMe() {
         List<AsyncApexJob> jobsBefore = [select Id, ApexClassID, ApexClass.Name, Status, JobType from AsyncApexJob];
         System.assertEquals(0, jobsBefore.size(), 'not expecting any asyncjobs');
         
         Test.startTest();
-        String jobId = EmailBatchScheduler.scheduleMe();
+        String jobId = EmailBatchJob.scheduleMe();
         Test.stopTest();
         
         List<AsyncApexJob> jobsScheduled = [select Id, ApexClassID, ApexClass.Name, Status, JobType from AsyncApexJob where JobType = 'ScheduledApex'];
         System.assertEquals(1, jobsScheduled.size(), 'expecting one scheduled job');
-        System.assertEquals('EmailBatchScheduler', jobsScheduled[0].ApexClass.Name, 'expecting specific scheduled job');
+        System.assertEquals('EmailBatchJob', jobsScheduled[0].ApexClass.Name, 'expecting specific scheduled job');
     }
     
     @isTest
     static void testBatchExecution() {
         String uniqueUserName = 'standarduser' + DateTime.now().getTime() + '@testorg.com';
         
-        Profile p = [SELECT Id FROM Profile WHERE Name='Standard User'];
+        Profile p = [select Id from Profile where Name='Standard User'];
         
         User u = new User(Alias = 'standt', Email='standarduser@testorg.com',
                           EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
@@ -44,7 +44,7 @@ class EmailBatchSchedulerTest {
             Datetime tenDaysAgo = Date.today().addDays(-10);
             
             for (Opportunity opp : testOpportunities) {
-				Test.setCreatedDate(opp.Id, tenDaysAgo);
+                Test.setCreatedDate(opp.Id, tenDaysAgo);
             }
         }
         

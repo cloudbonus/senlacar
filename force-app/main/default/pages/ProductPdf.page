@@ -1,0 +1,37 @@
+<apex:page controller="ProductControllerWithTranslationSupport" renderAs="pdf" language="{!$CurrentPage.parameters.lang}" applyBodyTag="false">  
+    
+    <head>
+        <style>
+            body { font-family: 'Arial Unicode MS';}
+        </style> 
+    </head>
+    
+    <body>
+        <h1>{!product.Lineup__c}</h1>
+        <table>
+
+            <tr>
+                <th><strong>{!$Label.configuration}:</strong></th>
+                <td>{!product.Equipment__c}</td>
+            </tr>
+
+            <tr>
+                <th><strong>{!$Label.description}:</strong></th>
+                <td>{!product.Description}</td>
+            </tr>
+            <tr>
+                <th><strong>{!$Label.price}:</strong></th>
+                <td>
+                    <apex:outputPanel rendered="{!OR($CurrentPage.parameters.currency == 'usd', ISNULL($CurrentPage.parameters.currency))}">
+                        {!product.PricebookEntries[0].UnitPrice} {!product.PricebookEntries[0].CurrencyIsoCode}
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!$CurrentPage.parameters.currency == 'byn'}">
+                {!product.PriceByn__c}
+               </apex:outputPanel>
+                </td>
+            </tr>
+            
+        </table>
+    </body>
+    
+</apex:page>

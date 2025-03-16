@@ -4,6 +4,7 @@ import { createRecord } from 'lightning/uiRecordApi';
 
 import CONTACT_OBJECT from '@salesforce/schema/Contact';
 import CASE_OBJECT from '@salesforce/schema/Case';
+import findContactsByEmailAndLastName from '@salesforce/apex/ContactController.findContactsByEmailAndLastName';
 
 import questionTitle from '@salesforce/label/c.question';
 import contactInformation from '@salesforce/label/c.contactInformation'
