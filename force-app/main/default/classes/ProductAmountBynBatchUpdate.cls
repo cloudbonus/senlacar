@@ -51,21 +51,4 @@ public with sharing class ProductAmountBynBatchUpdate implements Database.Batcha
         }
         return null;
     }
-    
-    // private Decimal getPriceFromPriceBook(Id productId) {
-        //     List<PricebookEntry> pricebookEntries = [
-        //     SELECT UnitPrice
-        //     FROM PricebookEntry
-        //     WHERE Product2Id = :productId
-        //     AND Pricebook2.IsStandard = true
-        //     LIMIT 1
-        // ];
-        
-        //     if (!pricebookEntries.isEmpty()) {
-            //         return pricebookEntries[0].UnitPrice;
-        //     } else {
-            //         System.debug('No PricebookEntry found for Product2 ID: ' + productId);
-            //         return null;
-        //     }
-    // }
 }
