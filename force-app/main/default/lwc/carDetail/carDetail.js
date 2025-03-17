@@ -17,11 +17,12 @@ import lang from '@salesforce/i18n/lang'
 export default class CarDetail extends LightningElement {
 
     @api products;
+    @api currentCurrency;
+
     selectedEquipment = null;
-
     selectedType = 'Individual';
-    showCompanyFields = false;
 
+    showCompanyFields = false;
     showTestDriveForm = false;
     isLoading = false;
 
@@ -139,7 +140,6 @@ export default class CarDetail extends LightningElement {
         try {
             let leadId = await this.findExistingLead();
 
-            console.log(leadId);
             if (!leadId) {
                 await this.createLead();
             }else{
@@ -181,6 +181,11 @@ export default class CarDetail extends LightningElement {
         return await createRecord(leadRecord);
     }
 
+    async updateLead(leadId) {
+        const leadRecord = this.processDataBeforeOperation(leadId);
+        return await updateRecord(leadRecord);
+    }
+
     processDataBeforeOperation(leadId = null) {
         const carModel = this.productTemplate.Lineup__c;
 
@@ -201,11 +206,6 @@ export default class CarDetail extends LightningElement {
         }
 
         return { apiName: LEAD_OBJECT.objectApiName, fields: leadFields };
-    }
-
-    async updateLead(leadId) {
-        const leadRecord = this.processDataBeforeOperation(leadId);
-        return await updateRecord(leadRecord);
     }
 
     showToast(title, message, variant) {
