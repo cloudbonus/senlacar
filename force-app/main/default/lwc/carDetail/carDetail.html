@@ -4,19 +4,31 @@
             <div class="modal-container">
 
                 <template if:true={showTestDriveForm}>
-
                     <header class="modal-header slds-text-heading_medium">
                         <p>Test Drive Request</p>
                     </header>
                     <main class="modal-body">
-                        <lightning-input label="First Name" required value={firstName}
+                        <lightning-input label="First Name" required value={lead.firstName}
                             onchange={handleFirstNameChange}></lightning-input>
-                        <lightning-input label="Last Name" required value={lastName}
+                        <lightning-input label="Last Name" required value={lead.lastName}
                             onchange={handleLastNameChange}></lightning-input>
-                        <lightning-input label="Company" value={company}
-                            onchange={handleCompanyChange}></lightning-input>
-                        <lightning-input type="email" label="Email" required value={email}
-                            onchange={handleEmailChange}></lightning-input>
+
+                        <lightning-radio-group label="Type" options={companyOptions} value={selectedType}
+                            onchange={handleTypeChange} class="slds-m-vertical_small">
+                        </lightning-radio-group>
+
+                        <template if:true={isCompanySelected}>
+                            <lightning-input label="Company Name" required value={lead.company}
+                                onchange={handleCompanyChange}>
+                            </lightning-input>
+                            <lightning-input type="url" label="Company Website" value={lead.website}
+                                onchange={handleWebsiteChange}>
+                            </lightning-input>
+                        </template>
+
+                        <lightning-input type="email" label="Email" required value={lead.email}
+                            onchange={handleEmailChange}>
+                        </lightning-input>
 
                         <div if:true={error} class="slds-text-color_error slds-m-top_small">
                             {error}

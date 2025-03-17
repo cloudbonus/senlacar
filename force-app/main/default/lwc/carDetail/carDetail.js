@@ -1,6 +1,8 @@
 import { LightningElement, api } from 'lwc';
 
-import { createRecord } from 'lightning/uiRecordApi';
+import findLeadsByEmailAndLastName from '@salesforce/apex/LeadController.findLeadsByEmailAndLastName';
+
+import { createRecord, updateRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import LEAD_OBJECT from '@salesforce/schema/Lead';
 
@@ -17,8 +19,16 @@ export default class CarDetail extends LightningElement {
     @api products;
     selectedEquipment = null;
 
+    selectedType = 'Individual';
+    showCompanyFields = false;
+
     showTestDriveForm = false;
     isLoading = false;
+
+    companyOptions = [
+        { label: 'Individual', value: 'Individual' },
+        { label: 'Company', value: 'Company' }
+    ];
 
     label = {
         close,
@@ -32,7 +42,8 @@ export default class CarDetail extends LightningElement {
     lead = {
         firstName: '',
         lastName: '',
-        company: 'Individual',
+        company: '',
+        website: '', 
         email: ''
     };
 
@@ -48,6 +59,10 @@ export default class CarDetail extends LightningElement {
 
     get selectedProduct() {
         return this.products?.find(prod => prod.Id === this.selectedEquipment) || this.productTemplate;
+    }
+
+    get isCompanySelected() {
+        return this.selectedType === 'Company';
     }
 
     get selectedProductPrice() {
@@ -77,19 +92,28 @@ export default class CarDetail extends LightningElement {
     }
 
     handleFirstNameChange(event) {
-        this.firstName = event.target.value;
+        this.lead.firstName = event.target.value;
     }
 
     handleLastNameChange(event) {
-        this.lastName = event.target.value;
+        this.lead.lastName = event.target.value;
+    }
+
+    handleTypeChange(event) {
+        this.selectedType = event.detail.value;
+        this.showCompanyFields = event.detail.value === 'Company';
     }
 
     handleCompanyChange(event) {
-        this.company = event.target.value;
+        this.lead.company = event.target.value;
+    }
+
+    handleWebsiteChange(event) {
+        this.lead.website = event.target.value;
     }
 
     handleEmailChange(event) {
-        this.email = event.target.value;
+        this.lead.email = event.target.value;
     }
 
     handleTestDrive() {
@@ -113,8 +137,14 @@ export default class CarDetail extends LightningElement {
         this.isLoading = true;
 
         try {
+            let leadId = await this.findExistingLead();
 
-            await this.createLead();
+            console.log(leadId);
+            if (!leadId) {
+                await this.createLead();
+            }else{
+                await this.updateLead(leadId);
+            }
 
             this.showTestDriveForm = false;
 
@@ -128,21 +158,54 @@ export default class CarDetail extends LightningElement {
         }
     }
 
+    async findExistingLead() {
+        try {
+            const result = await findLeadsByEmailAndLastName({
+                email: this.lead.email,
+                lastName: this.lead.lastName
+            });
+
+            if (result.length > 0) {
+                return result[0].Id;
+            }
+
+            return null;
+        } catch (error) {
+            console.error('Error finding lead:', error);
+            return null;
+        }
+    }
+
     async createLead() {
+        const leadRecord = this.processDataBeforeOperation();
+        return await createRecord(leadRecord);
+    }
+
+    processDataBeforeOperation(leadId = null) {
         const carModel = this.productTemplate.Lineup__c;
 
         const leadFields = {
             FirstName: this.lead.firstName,
             LastName: this.lead.lastName,
-            Company: this.lead.company,
+            Company: this.selectedType === 'Company' ? this.lead.company : 'Individual',
             Email: this.lead.email,
+            Website: this.lead.website,
             LeadSource: 'Web',
             Description: `Test Drive Request for: ${carModel}`,
-            Status: 'Open - Not Contacted'
+            Status: 'Open - Not Contacted',
         };
 
-        const leadRecord = { apiName: LEAD_OBJECT.objectApiName, fields: leadFields };
-        return await createRecord(leadRecord);
+        if (leadId) {
+            leadFields.Id = leadId;
+            return { fields: leadFields };
+        }
+
+        return { apiName: LEAD_OBJECT.objectApiName, fields: leadFields };
+    }
+
+    async updateLead(leadId) {
+        const leadRecord = this.processDataBeforeOperation(leadId);
+        return await updateRecord(leadRecord);
     }
 
     showToast(title, message, variant) {
@@ -168,10 +231,13 @@ export default class CarDetail extends LightningElement {
     }
 
     resetForm() {
+        this.selectedType = 'Individual';
+        this.showCompanyFields = false;
         this.lead = {
             firstName: '',
             lastName: '',
-            company: 'Individual',
+            company: '',
+            website: '',
             email: ''
         };
 
