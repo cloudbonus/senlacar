@@ -11,12 +11,7 @@ import selectCountry from '@salesforce/label/c.selectCountry'
 import network from '@salesforce/label/c.network'
 
 export default class GoogleMap extends LightningElement {
-    _countries = [];
-    _countryToCities = {};
-    _markers = [];
-    _allMarkers = [];
-    _recordTypeOptions = [];
-
+    
     labels = {
         showAll,
         show,
@@ -28,9 +23,15 @@ export default class GoogleMap extends LightningElement {
         network
     }
 
-    selectedCountry;
-    selectedCity;
+    selectedCountry = null;
+    selectedCity = null;
     selectedRecordType = 'all';
+
+    _countries = [];
+    _countryToCities = {};
+    _markers = [];
+    _allMarkers = [];
+    _recordTypeOptions = [];
 
     get markers() {
         return this._markers;

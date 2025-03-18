@@ -7,15 +7,16 @@ import CASE_OBJECT from '@salesforce/schema/Case';
 import findContactsByEmailAndLastName from '@salesforce/apex/ContactController.findContactsByEmailAndLastName';
 
 import questionTitle from '@salesforce/label/c.question';
-import contactInformation from '@salesforce/label/c.contactInformation'
-import firstName from '@salesforce/label/c.firstName'
-import lastName from '@salesforce/label/c.lastName'
-import caseInformation from '@salesforce/label/c.caseInformation'
-import subject from '@salesforce/label/c.subject'
-import description from '@salesforce/label/c.description'
-import submit from '@salesforce/label/c.submit'
+import contactInformation from '@salesforce/label/c.contactInformation';
+import firstName from '@salesforce/label/c.firstName';
+import lastName from '@salesforce/label/c.lastName';
+import caseInformation from '@salesforce/label/c.caseInformation';
+import subject from '@salesforce/label/c.subject';
+import description from '@salesforce/label/c.description';
+import submit from '@salesforce/label/c.submit';
 
 export default class Question extends LightningElement {
+    
     label = {
         questionTitle,
         contactInformation,
@@ -27,8 +28,6 @@ export default class Question extends LightningElement {
         submit
     };
 
-    isLoading = false;
-
     contact = {
         firstName: '',
         lastName: '',
@@ -39,6 +38,8 @@ export default class Question extends LightningElement {
         subject: '',
         description: ''
     };
+
+    isLoading = false;
 
     handleFirstNameChange(event) {
         this.contact.firstName = event.target.value;
@@ -85,6 +86,49 @@ export default class Question extends LightningElement {
         }
     }
 
+    async findExistingContact() {
+        try {
+            const result = await findContactsByEmailAndLastName({
+                email: this.contact.email,
+                lastName: this.contact.lastName
+            });
+
+            if (result.length > 0) {
+                return result[0].Id;
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('Error finding contact:', error);
+            return null;
+        }
+    }
+
+    async createContact() {
+        const contactFields = {
+            FirstName: this.contact.firstName,
+            LastName: this.contact.lastName,
+            Email: this.contact.email,
+        };
+
+        const contactRecord = { apiName: CONTACT_OBJECT.objectApiName, fields: contactFields };
+        const result = await createRecord(contactRecord);
+        return result.id;
+    }
+
+    async createCase(contactId) {
+        const caseFields = {
+            Subject: this.case.subject,
+            Description: this.case.description,
+            ContactId: contactId,
+            Status: 'New',
+            Origin: 'Web'
+        };
+
+        const caseRecord = { apiName: CASE_OBJECT.objectApiName, fields: caseFields };
+        return createRecord(caseRecord);
+    }
+
     validateForm() {
         const inputs = this.template.querySelectorAll('lightning-input, lightning-textarea');
         let isValid = true;
@@ -122,47 +166,5 @@ export default class Question extends LightningElement {
         this.template.querySelectorAll('lightning-input, lightning-textarea').forEach(input => {
             input.value = '';
         });
-    }
-
-    async findExistingContact() {
-        try {
-            const result = await findContactsByEmailAndLastName({
-                email: this.contact.email,
-                lastName: this.contact.lastName
-            });
-
-            if (result.length > 0) {
-                return result[0].Id;
-            }
-            return null;
-        } catch (error) {
-            console.error('Error finding contact:', error);
-            return null;
-        }
-    }
-
-    async createContact() {
-        const contactFields = {
-            FirstName: this.contact.firstName,
-            LastName: this.contact.lastName,
-            Email: this.contact.email,
-        };
-
-        const contactRecord = { apiName: CONTACT_OBJECT.objectApiName, fields: contactFields };
-        const result = await createRecord(contactRecord);
-        return result.id;
-    }
-
-    async createCase(contactId) {
-        const caseFields = {
-            Subject: this.case.subject,
-            Description: this.case.description,
-            ContactId: contactId,
-            Status: 'New',
-            Origin: 'Web'
-        };
-
-        const caseRecord = { apiName: CASE_OBJECT.objectApiName, fields: caseFields };
-        return createRecord(caseRecord);
     }
 }

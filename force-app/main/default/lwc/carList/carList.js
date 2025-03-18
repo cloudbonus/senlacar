@@ -7,17 +7,17 @@ export default class CarList extends LightningElement {
     
     @wire(MessageContext)
     messageContext;
+
     currentCurrency = 'usd';
 
-    _products;
-    _productsByLineup
-
     isModalOpen = false;
-    selectedProduct;
+    selectedProduct = null;
+
+    _products = [];
+    _productsByLineup = {};
 
     get products() {
-        console.log(this._products);
-        return this._products || [];
+        return this._products;
     }
 
     handleOpenModal(event) {
@@ -46,9 +46,7 @@ export default class CarList extends LightningElement {
         const storedCurrency = localStorage.getItem('selectedCurrency');
 
         if (storedCurrency) {
-
             this.currentCurrency = storedCurrency;
-
         }
 
         this.subscribeToMessageChannel();
@@ -85,24 +83,14 @@ export default class CarList extends LightningElement {
     }
 
     subscribeToMessageChannel() {
-
         this.subscription = subscribe(
-
             this.messageContext,
-
             CURRENCY_CHANNEL,
-
             (message) => this.handleMessage(message)
-
         );
-
     }
 
     handleMessage(message) {
-
         this.currentCurrency = message.currency;
-
-        console.log(JSON.stringify(this.currentCurrency));
-
     }
 }
