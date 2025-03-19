@@ -11,9 +11,12 @@ class OpportunityTriggerTest {
         );
         insert testContact;
 
-        Account testAccount = new Account(
-            Name = 'test account'
+        Contact testContactNoEmail = new Contact(
+            LastName = 'ivanov'
         );
+        insert testContactNoEmail;
+
+        Account testAccount = new Account(Name = 'test account');
         insert testAccount;
 
         Id pricebookId = Test.getStandardPricebookId();
@@ -33,7 +36,7 @@ class OpportunityTriggerTest {
         insert testPricebookEntry;
 
         Opportunity testOpportunity = new Opportunity(
-            Name = 'test opportunity with product',
+            Name = 'test opportunity with contact',
             StageName = 'Proposal/Price Quote',
             CloseDate = Date.today(),
             AccountId = testAccount.Id,
@@ -41,6 +44,25 @@ class OpportunityTriggerTest {
             Pricebook2Id = pricebookId
         );
         insert testOpportunity;
+
+        Opportunity testOpportunityNoEmail = new Opportunity(
+            Name = 'test opportunity no email',
+            StageName = 'Proposal/Price Quote',
+            CloseDate = Date.today(),
+            AccountId = testAccount.Id,
+            ContactId = testContactNoEmail.Id,
+            Pricebook2Id = pricebookId
+        );
+        insert testOpportunityNoEmail;
+
+        Opportunity testOpportunityNoContact = new Opportunity(
+            Name = 'test opportunity no contact',
+            StageName = 'Proposal/Price Quote',
+            CloseDate = Date.today(),
+            AccountId = testAccount.Id,
+            Pricebook2Id = pricebookId
+        );
+        insert testOpportunityNoContact;
 
         OpportunityLineItem testOpportunityLineItem = new OpportunityLineItem(
             OpportunityId = testOpportunity.Id,
@@ -50,18 +72,49 @@ class OpportunityTriggerTest {
         );
         insert testOpportunityLineItem;
     }
-    
+
     @isTest
-    static void testTriggerEnqueuesJob() {
-        Opportunity testOpportunity = [select StageName from Opportunity where Name = 'test opportunity with product' limit 1];
-        
+    static void testTriggerSendsEmail() {
+        Opportunity testOpportunity = [SELECT Id, StageName FROM Opportunity WHERE Name = 'Test Opportunity With Contact' LIMIT 1];
+
+        Integer invocationCounter = 0;
+
         Test.startTest();
         testOpportunity.StageName = 'Closed Won';
         update testOpportunity;
+        invocationCounter = Limits.getEmailInvocations();
         Test.stopTest();
-        
-        List<AsyncApexJob> jobs = [SELECT Id, JobType, Status FROM AsyncApexJob WHERE JobType = 'Queueable' LIMIT 1];
-        System.assert(!jobs.isEmpty(), 'expecting an asynchronous job to be enqueued');
-        System.assertEquals('Completed', jobs[0].Status, 'expecting the job to complete successfully.');
+
+        System.assertEquals(1, invocationCounter, 'expecting all emails to be sent');
+    }
+
+    @isTest
+    static void testTriggerNoEmailSentWhenNoContact() {
+        Opportunity testOpportunityNoContact = [SELECT Id, StageName FROM Opportunity WHERE Name = 'test opportunity no contact' LIMIT 1];
+
+        Integer invocationCounter = 0;
+
+        Test.startTest();
+        testOpportunityNoContact.StageName = 'Closed Won';
+        update testOpportunityNoContact;
+        invocationCounter = Limits.getEmailInvocations();
+        Test.stopTest();
+
+        System.assertEquals(0, invocationCounter, 'no email should be sent when there is no contact');
+    }
+
+    @isTest
+    static void testTriggerNoEmailSentWhenContactHasNoEmail() {
+        Opportunity testOpportunityNoEmail = [SELECT Id, StageName FROM Opportunity WHERE Name = 'test opportunity no email' LIMIT 1];
+
+        Integer invocationCounter = 0;
+
+        Test.startTest();
+        testOpportunityNoEmail.StageName = 'Closed Won';
+        update testOpportunityNoEmail;
+        invocationCounter = Limits.getEmailInvocations();
+        Test.stopTest();
+
+        System.assertEquals(0, invocationCounter, 'no email should be sent when contact has no email');
     }
 }

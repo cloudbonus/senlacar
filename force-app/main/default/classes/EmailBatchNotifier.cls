@@ -3,7 +3,7 @@ public with sharing class EmailBatchNotifier implements Database.Batchable<SObje
     @TestVisible 
     private static Integer invocationCounter = 0;
 
-    private List<Map<String, String>> emailDataList = new List<Map<String, String>>();
+    private List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
         return Database.getQueryLocator([
@@ -17,33 +17,20 @@ public with sharing class EmailBatchNotifier implements Database.Batchable<SObje
     public void execute(Database.BatchableContext bc, List<Opportunity> scope) {
         for (Opportunity opp : scope) {
             if (opp.Owner.Email != null) {
-                Map<String, String> emailData = new Map<String, String>{
-                    'email' => opp.Owner.Email,
-                    'ownerName' => opp.Owner.Name,
-                    'oppName' => opp.Name
-                };
-                emailDataList.add(emailData);
+                Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+                email.setToAddresses(new String[]{opp.Owner.Email});
+                email.setSubject('Opportunity is still in New stage');
+                email.setPlainTextBody('Dear ' + opp.Owner.Name + 
+                    ', your opportunity "' + opp.Owner.Name('oppName') + '" is still in the New stage. Please take action.');
+                emails.add(email);
             }
         }
     }
 
-    public void finish(Database.BatchableContext bc) {
-        List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
-        
-        for (Map<String, String> emailData : emailDataList) {
-            Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-            email.setToAddresses(new String[]{emailData.get('email')});
-            email.setSubject('Opportunity is still in New stage');
-            email.setPlainTextBody('Dear ' + emailData.get('ownerName') + 
-                ', your opportunity "' + emailData.get('oppName') + '" is still in the New stage. Please take action.');
-            emails.add(email);
-        }
-
+    public void finish(Database.BatchableContext bc) {        
         if (!emails.isEmpty()) {
             Messaging.sendEmail(emails);
             invocationCounter = Limits.getEmailInvocations();
         }
-
-        System.debug('Emails were sent');
     }
 }
