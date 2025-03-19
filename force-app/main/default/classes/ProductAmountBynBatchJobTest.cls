@@ -32,14 +32,12 @@ private class ProductAmountBynBatchJobTest {
             Id = stdPricebookId,
             IsActive = true
         );
-        
         update standardPricebook;
         
         Product2 product = new Product2(
-            Name = 'Test Product',
+            Name = 'test product',
             IsActive = true
         );
-        
         insert product;
         
         PricebookEntry pbEntry = new PricebookEntry(
@@ -48,9 +46,7 @@ private class ProductAmountBynBatchJobTest {
             UnitPrice = 100.00,
             IsActive = true
         );
-        
         insert pbEntry;
-        
     }
     
     
@@ -78,7 +74,7 @@ private class ProductAmountBynBatchJobTest {
         Database.executeBatch(batch);
         Test.stopTest();
         
-        Product2 updatedProd = [SELECT AmountByn__c FROM Product2 WHERE Name = 'Test Product'];
+        Product2 updatedProd = [SELECT AmountByn__c FROM Product2 WHERE Name = 'test product'];
         System.assertNotEquals(null, updatedProd.AmountByn__c);
     }
     
@@ -91,7 +87,7 @@ private class ProductAmountBynBatchJobTest {
         Database.executeBatch(batch);
         Test.stopTest();
         
-        Product2 nonUpdatedProd = [SELECT AmountByn__c FROM Product2 WHERE Name = 'Test Product'];
+        Product2 nonUpdatedProd = [SELECT AmountByn__c FROM Product2 WHERE Name = 'test product'];
         System.assertEquals(null, nonUpdatedProd.AmountByn__c);
     }
     

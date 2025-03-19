@@ -1,5 +1,5 @@
 public with sharing class ProductAmountBynBatchJob implements Schedulable{
-    public static String scheduler = '0 30 12 * * ?';  //Every Day at 12:10 PM 
+    public static String scheduler = '0 10 12 * * ?';  //Every Day at 12:10 PM 
 
     public static String scheduleMe() {
         ProductAmountBynBatchJob productAmountBynBatchJob = new ProductAmountBynBatchJob(); 

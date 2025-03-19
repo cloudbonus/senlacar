@@ -31,14 +31,13 @@ class EmailBatchJobTest {
         System.runAs(u) {
             for (Integer i = 0; i < 5; i++) {
                 Opportunity opp = new Opportunity(
-                    Name = 'Test Opportunity ' + i,
+                    Name = 'test opportunity ' + i,
                     StageName = 'New',
                     CloseDate = Date.today().addDays(30),
                     OwnerId = u.Id
                 );
                 testOpportunities.add(opp);
             }
-            
             insert testOpportunities;
             
             Datetime tenDaysAgo = Date.today().addDays(-10);
@@ -49,10 +48,8 @@ class EmailBatchJobTest {
         }
         
         Test.startTest();
-        
         EmailBatchNotifier batch = new EmailBatchNotifier();
         Database.executeBatch(batch);   
-        
         Test.stopTest();
         
         System.assertEquals(1, EmailBatchNotifier.invocationCounter, 'expecting all emails to be sent');

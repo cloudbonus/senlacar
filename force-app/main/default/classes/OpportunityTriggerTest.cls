@@ -2,24 +2,24 @@
 class OpportunityTriggerTest {
     
     @testSetup
-    static void setupData() {
+    static void setupTestData() {
         String uniqueEmail = 'standarduser' + DateTime.now().getTime() + '@testorg.com';
         
         Contact testContact = new Contact(
-            LastName = 'Petrov',
+            LastName = 'petrov',
             Email = uniqueEmail
         );
         insert testContact;
 
         Account testAccount = new Account(
-            Name = 'Test Account'
+            Name = 'test account'
         );
         insert testAccount;
 
         Id pricebookId = Test.getStandardPricebookId();
 
         Product2 testProduct = new Product2(
-            Name = 'Test Product',
+            Name = 'test product',
             IsActive = true
         );
         insert testProduct;
@@ -33,7 +33,7 @@ class OpportunityTriggerTest {
         insert testPricebookEntry;
 
         Opportunity testOpportunity = new Opportunity(
-            Name = 'Test Opportunity with Product',
+            Name = 'test opportunity with product',
             StageName = 'Proposal/Price Quote',
             CloseDate = Date.today(),
             AccountId = testAccount.Id,
@@ -53,13 +53,11 @@ class OpportunityTriggerTest {
     
     @isTest
     static void testTriggerEnqueuesJob() {
-        Opportunity testOpportunity = [select StageName from Opportunity where Name = 'Test Opportunity with Product' limit 1];
+        Opportunity testOpportunity = [select StageName from Opportunity where Name = 'test opportunity with product' limit 1];
         
         Test.startTest();
-        
         testOpportunity.StageName = 'Closed Won';
         update testOpportunity;
-        
         Test.stopTest();
         
         List<AsyncApexJob> jobs = [SELECT Id, JobType, Status FROM AsyncApexJob WHERE JobType = 'Queueable' LIMIT 1];
