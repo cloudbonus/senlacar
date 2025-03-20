@@ -14,7 +14,7 @@ export default class CurrencySelector extends LightningElement {
         { label: 'BYN', value: 'byn' }
     ];
 
-    cc(event) {
+    handleCurrencyChange(event) {
         this.selectedCurrency = event.detail.value;
         localStorage.setItem('selectedCurrency', this.selectedCurrency);
         this.publishCurrency();
