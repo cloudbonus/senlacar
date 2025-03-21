@@ -1,31 +1,31 @@
 import { LightningElement } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { createRecord } from 'lightning/uiRecordApi';
+import { createRecord, updateRecord } from 'lightning/uiRecordApi';
 
 import CONTACT_OBJECT from '@salesforce/schema/Contact';
 import CASE_OBJECT from '@salesforce/schema/Case';
 import findContactsByEmailAndLastName from '@salesforce/apex/ContactController.findContactsByEmailAndLastName';
 
-import questionTitle from '@salesforce/label/c.question';
-import contactInformation from '@salesforce/label/c.contactInformation';
-import firstName from '@salesforce/label/c.firstName';
-import lastName from '@salesforce/label/c.lastName';
-import caseInformation from '@salesforce/label/c.caseInformation';
-import subject from '@salesforce/label/c.subject';
-import description from '@salesforce/label/c.description';
-import submit from '@salesforce/label/c.submit';
+import CONTACT_QUESTION_TITLE from '@salesforce/label/c.Contact_Question_Title';
+import CONTACT_INFO_TITLE from '@salesforce/label/c.Contact_Info_Title';
+import FIRST_NAME_TITLE from '@salesforce/label/c.First_Name_Title';
+import LAST_NAME_TITLE from '@salesforce/label/c.Last_Name_Title';
+import CASE_INFO_TITLE from '@salesforce/label/c.Case_Info_Title';
+import SUBJECT_TITLE from '@salesforce/label/c.Subject_Title';
+import DESCRIPTION_TITLE from '@salesforce/label/c.Description_Title';
+import SUBMIT_BUTTON from '@salesforce/label/c.Submit_Button';
 
 export default class Question extends LightningElement {
     
-    label = {
-        questionTitle,
-        contactInformation,
-        firstName,
-        lastName,
-        caseInformation,
-        subject,
-        description,
-        submit
+    labels = {
+        CONTACT_QUESTION_TITLE,
+        CONTACT_INFO_TITLE,
+        FIRST_NAME_TITLE,
+        LAST_NAME_TITLE,
+        CASE_INFO_TITLE,
+        SUBJECT_TITLE,
+        DESCRIPTION_TITLE,
+        SUBMIT_BUTTON
     };
 
     contact = {
@@ -72,11 +72,13 @@ export default class Question extends LightningElement {
             let contactId = await this.findExistingContact();
 
             if (!contactId) {
-                contactId = await this.createContact();
+                await this.createContact();
+            }else{
+                await this.updateContact(contactId);
             }
 
             await this.createCase(contactId);
-
+            
             this.showToast('Success', 'Case Submitted Successfully', 'success');
             this.resetForm();
         } catch (error) {
@@ -105,15 +107,28 @@ export default class Question extends LightningElement {
     }
 
     async createContact() {
+        const contactRecord = this.processDataBeforeOperation();
+        return await createRecord(contactRecord);
+    }
+
+    async updateContact(contactId) {
+        const contactRecord = this.processDataBeforeOperation(contactId);
+        return await updateRecord(contactRecord);
+    }
+
+    processDataBeforeOperation(contactId = null) {
         const contactFields = {
             FirstName: this.contact.firstName,
             LastName: this.contact.lastName,
             Email: this.contact.email,
         };
 
-        const contactRecord = { apiName: CONTACT_OBJECT.objectApiName, fields: contactFields };
-        const result = await createRecord(contactRecord);
-        return result.id;
+        if (contactId) {
+            contactFields.Id = contactId;
+            return { fields: contactFields };
+        }
+
+        return { apiName: CONTACT_OBJECT.objectApiName, fields: contactFields };
     }
 
     async createCase(contactId) {

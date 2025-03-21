@@ -1,6 +1,6 @@
 @isTest
-private class ProductAmountBynBatchJobTest {
-        
+private class PricebookEntryAmountBynBatchJobTest {
+    
     private class ExchangeRateMock implements HttpCalloutMock {
         private Integer statusCode;
         
@@ -26,7 +26,7 @@ private class ProductAmountBynBatchJobTest {
     
     @TestSetup
     static void setup() {
-        Id stdPricebookId = Test.getStandardPricebookId();
+         Id stdPricebookId = Test.getStandardPricebookId();
         
         Pricebook2 standardPricebook = new Pricebook2(
             Id = stdPricebookId,
@@ -49,33 +49,31 @@ private class ProductAmountBynBatchJobTest {
         insert pbEntry;
     }
     
-    
     @IsTest
     public static void testSchedule() {
         List<AsyncApexJob> jobsBefore = [SELECT Id, ApexClass.Name FROM AsyncApexJob];
         System.assertEquals(0, jobsBefore.size(), 'not expecting any asyncjobs');
         
         Test.startTest();
-        String jobId = ProductAmountBynBatchJob.scheduleMe();
+        String jobId = PricebookEntryAmountBynBatchJob.scheduleMe();
         Test.stopTest();
         
         List<AsyncApexJob> jobsScheduled = [SELECT Id, ApexClass.Name FROM AsyncApexJob WHERE JobType = 'ScheduledApex'];
         System.assertEquals(1, jobsScheduled.size(), 'expecting one scheduled job');
-        System.assertEquals('ProductAmountBynBatchJob', jobsScheduled[0].ApexClass.Name, 'expecting specific scheduled job');
+        System.assertEquals('PricebookEntryAmountBynBatchJob', jobsScheduled[0].ApexClass.Name, 'expecting specific scheduled job');
     }
-    
     
     @isTest
     static void testBatchWithValidRate() {
         Test.setMock(HttpCalloutMock.class, new ExchangeRateMock(200));
         
         Test.startTest();
-        ProductAmountBynBatchUpdate batch = new ProductAmountBynBatchUpdate();
+        PricebookEntryAmountBynBatchUpdate batch = new PricebookEntryAmountBynBatchUpdate();
         Database.executeBatch(batch);
         Test.stopTest();
         
-        Product2 updatedProd = [SELECT AmountByn__c FROM Product2 WHERE Name = 'test product'];
-        System.assertNotEquals(null, updatedProd.AmountByn__c);
+        PricebookEntry updatedPbe = [SELECT AmountByn__c FROM PricebookEntry LIMIT 1];
+        System.assertEquals(250.00, updatedPbe.AmountByn__c, 'AmountByn__c should be 250.00');
     }
     
     @isTest
@@ -83,12 +81,12 @@ private class ProductAmountBynBatchJobTest {
         Test.setMock(HttpCalloutMock.class, new ExchangeRateMock(404));
         
         Test.startTest();
-        ProductAmountBynBatchUpdate batch = new ProductAmountBynBatchUpdate();
+        PricebookEntryAmountBynBatchUpdate batch = new PricebookEntryAmountBynBatchUpdate();
         Database.executeBatch(batch);
         Test.stopTest();
         
-        Product2 nonUpdatedProd = [SELECT AmountByn__c FROM Product2 WHERE Name = 'test product'];
-        System.assertEquals(null, nonUpdatedProd.AmountByn__c);
+        PricebookEntry nonUpdatedPbe = [SELECT AmountByn__c FROM PricebookEntry LIMIT 1];
+        System.assertEquals(null, nonUpdatedPbe.AmountByn__c, 'AmountByn__c should be null');
     }
     
     @isTest
@@ -96,10 +94,11 @@ private class ProductAmountBynBatchJobTest {
         Test.setMock(HttpCalloutMock.class, new ExceptionMock());
         
         Test.startTest();
-        ProductAmountBynBatchUpdate batch = new ProductAmountBynBatchUpdate();
+        PricebookEntryAmountBynBatchUpdate batch = new PricebookEntryAmountBynBatchUpdate();
         Database.executeBatch(batch);
         Test.stopTest();
         
-        System.assertEquals(0, [SELECT COUNT() FROM Product2 WHERE AmountByn__c != null]);
+        Integer updatedCount = [SELECT COUNT() FROM PricebookEntry WHERE AmountByn__c != null];
+        System.assertEquals(0, updatedCount, 'no PricebookEntry records should have been updated');
     }
 }

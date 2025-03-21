@@ -58,7 +58,6 @@ export default class CarList extends LightningElement {
             const productsByLineup = {};
             const baseProducts = [];
             const fetchedData = await getProducts();
-
             fetchedData.forEach(row => {
                 const lineup = row.Lineup__c;
                 const equipment = row.Equipment__c;

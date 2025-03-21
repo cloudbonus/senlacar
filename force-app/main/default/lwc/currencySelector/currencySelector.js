@@ -2,10 +2,17 @@ import { LightningElement, wire } from 'lwc';
 import { publish, MessageContext } from 'lightning/messageService';
 import CURRENCY_CHANNEL from '@salesforce/messageChannel/CurrencyMessageChannel__c';
 
+import CURRENCY_TITLE from '@salesforce/label/c.Currency_Title';
+import SELECT_CURRENCY_OPTION from '@salesforce/label/c.Select_Currency_Option';
 export default class CurrencySelector extends LightningElement {
     
     @wire(MessageContext)
     messageContext;
+
+    labels = {
+        CURRENCY_TITLE,
+        SELECT_CURRENCY_OPTION
+    };
 
     selectedCurrency = 'usd';
 

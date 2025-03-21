@@ -1,33 +1,30 @@
-public with sharing class ProductAmountBynBatchUpdate implements Database.Batchable<SObject>, Database.AllowsCallouts {
+public with sharing class PricebookEntryAmountBynBatchUpdate implements Database.Batchable<SObject>, Database.AllowsCallouts {
     
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        String query = 'SELECT Id, Name, AmountByn__c, ' +
-            '(SELECT UnitPrice FROM PricebookEntries WHERE Pricebook2.IsStandard = true LIMIT 1) ' +
-            'FROM Product2';
+        String query = 'SELECT Id, UnitPrice, AmountByn__c ' +
+                       'FROM PricebookEntry ' +
+                       'WHERE IsActive = true ' +
+                       'AND Product2.IsActive = true';
         return Database.getQueryLocator(query);
     }
     
-    public void execute(Database.BatchableContext bc, List<Product2> scope) {
+    public void execute(Database.BatchableContext bc, List<PricebookEntry> scope) {
         Decimal usdRate = fetchUsdRate();
         if (usdRate == null) {
             System.debug('Failed to retrieve USD exchange rate.');
             return;
         }
         
-        List<Product2> productsToUpdate = new List<Product2>();
+        List<PricebookEntry> entriesToUpdate = new List<PricebookEntry>();
 
-        for (Product2 product : scope) {
-            if (!product.PricebookEntries.isEmpty()) {
-                Decimal priceUsd = product.PricebookEntries[0].UnitPrice;
-                product.AmountByn__c = priceUsd * usdRate;
-                productsToUpdate.add(product);
-            } else {
-                System.debug('No standard PricebookEntry found for Product2 ID: ' + product.Id);
-            }
+        for (PricebookEntry entry : scope) {
+            Decimal priceUsd = entry.UnitPrice;
+            entry.AmountByn__c = priceUsd * usdRate;
+            entriesToUpdate.add(entry);
         }
     
-        if (!productsToUpdate.isEmpty()) {
-            update productsToUpdate;
+        if (!entriesToUpdate.isEmpty()) {
+            update entriesToUpdate;
         }
     }
     

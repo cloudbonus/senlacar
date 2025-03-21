@@ -1,26 +1,26 @@
 import { LightningElement } from 'lwc';
 import getAllAutocenters from '@salesforce/apex/AutocenterController.getAllAutocenters';
 
-import showAll from '@salesforce/label/c.showAll'
-import show from '@salesforce/label/c.show'
-import autocenterOT from '@salesforce/label/c.autocenterOT'
-import city from '@salesforce/label/c.city'
-import country from '@salesforce/label/c.country'
-import selectCity from '@salesforce/label/c.selectCity'
-import selectCountry from '@salesforce/label/c.selectCountry'
-import network from '@salesforce/label/c.network'
+import SHOW_BUTTON from '@salesforce/label/c.Show_Button'
+import SHOW_ALL_BUTTON from '@salesforce/label/c.Show_All_Button'
+import AUTOCENTER_TYPE_OPTION from '@salesforce/label/c.Autocenter_Type_Option'
+import CITY_TITLE from '@salesforce/label/c.City_Title'
+import COUNTRY_TITLE from '@salesforce/label/c.Country_Title'
+import SELECT_CITY_OPTION from '@salesforce/label/c.Select_City_Option'
+import SELECT_COUNTRY_OPTION from '@salesforce/label/c.Select_Country_Option'
+import DEALER_SERVICE_NETWORK from '@salesforce/label/c.Dealer_Service_Network'
 
 export default class GoogleMap extends LightningElement {
     
     labels = {
-        showAll,
-        show,
-        autocenterOT,
-        city,
-        country,
-        selectCity,
-        selectCountry,
-        network
+        SHOW_BUTTON,
+        SHOW_ALL_BUTTON,
+        AUTOCENTER_TYPE_OPTION,
+        CITY_TITLE,
+        COUNTRY_TITLE,
+        SELECT_CITY_OPTION,
+        SELECT_COUNTRY_OPTION,
+        DEALER_SERVICE_NETWORK
     }
 
     selectedCountry = null;
@@ -123,7 +123,7 @@ export default class GoogleMap extends LightningElement {
             });
 
             this._countries = Array.from(countriesSet).map(item => JSON.parse(item));
-            this._recordTypeOptions = [{ label: this.labels.showAll, value: 'all' }, ...Array.from(recordTypeSet).map(item => JSON.parse(item))];
+            this._recordTypeOptions = [{ label: this.labels.SHOW_BUTTON, value: 'all' }, ...Array.from(recordTypeSet).map(item => JSON.parse(item))];
 
             for (let key in countryToCitiesMap) {
                 countryToCitiesMap[key] = Array.from(countryToCitiesMap[key]).map(item => JSON.parse(item));

@@ -1,25 +1,25 @@
 <template>
-    <lightning-card title={labels.network}>
+    <lightning-card title={labels.DEALER_SERVICE_NETWORK}>
         <div class="slds-p-around_medium">
             <header class="slds-grid slds-gutters">
                 <section class="slds-col">
-                    <lightning-combobox name="country" label={labels.country} value={selectedCountry}
-                        placeholder={labels.selectCountry} options={countries} onchange={handleCountry}> </lightning-combobox>
+                    <lightning-combobox name="country" label={labels.COUNTRY_TITLE} value={selectedCountry}
+                        placeholder={labels.SELECT_COUNTRY_OPTION} options={countries} onchange={handleCountry}> </lightning-combobox>
                 </section>
 
                 <section class="slds-col">
-                    <lightning-combobox name="city" label={labels.city} value={selectedCity} placeholder={labels.selectCity}
+                    <lightning-combobox name="city" label={labels.CITY_TITLE} value={selectedCity} placeholder={labels.SELECT_CITY_OPTION}
                         options={cities} onchange={handleCity}> </lightning-combobox>
                 </section>
 
                 <section class="slds-col">
-                    <lightning-radio-group name="recordType" label={labels.autocenterOT} options={recordTypeOptions}
+                    <lightning-radio-group name="recordType" label={labels.AUTOCENTER_TYPE_OPTION} options={recordTypeOptions}
                         value={selectedRecordType} onchange={handleRecordTypeChange} required>
                     </lightning-radio-group>
                 </section>
 
                 <section class="slds-col slds-text-align_center">
-                    <lightning-button variant="brand" label={labels.show} onclick={handleShow}
+                    <lightning-button variant="brand" label={labels.SHOW_BUTTON} onclick={handleShow}
                         disabled={isButtonDisabled}></lightning-button>
                 </section>
             </header>

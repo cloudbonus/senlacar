@@ -5,14 +5,19 @@ import findLeadsByEmailAndLastName from '@salesforce/apex/LeadController.findLea
 import { createRecord, updateRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import LEAD_OBJECT from '@salesforce/schema/Lead';
-
-import close from '@salesforce/label/c.close'
-import downloadPfd from '@salesforce/label/c.downloadPfd'
-import price from '@salesforce/label/c.price'
-import selectConfiguration from '@salesforce/label/c.selectConfiguration'
-import configurationHint from '@salesforce/label/c.configurationHint'
-import priceAbsence from '@salesforce/label/c.priceAbsence'
 import lang from '@salesforce/i18n/lang'
+
+import CLOSE_BUTTON from '@salesforce/label/c.Close_Button'
+import DOWNLOAD_PDF_BUTTON from '@salesforce/label/c.Download_Pdf_Button'
+import PRICE_TITLE from '@salesforce/label/c.Price_Title'
+import SELECT_CONFIG_OPTION from '@salesforce/label/c.Select_Config_Option'
+import CONFIG_SELECT_PRICE_PROMPT from '@salesforce/label/c.Config_Select_Price_Prompt'
+import PRICE_NOT_SPECIFIED from '@salesforce/label/c.Price_Not_Specified'
+import FIRST_NAME_TITLE from '@salesforce/label/c.First_Name_Title';
+import LAST_NAME_TITLE from '@salesforce/label/c.Last_Name_Title';
+import COMPANY_WEBSITE_TITLE from '@salesforce/label/c.Company_Website_Title';
+import COMPANY_OR_INDIVIDUAL_TYPE_OPTION from '@salesforce/label/c.Company_Or_Individual_Type_Option';
+import COMPANY_NAME_TITLE from '@salesforce/label/c.Company_Name_Title';
 
 export default class CarDetail extends LightningElement {
 
@@ -31,13 +36,18 @@ export default class CarDetail extends LightningElement {
         { label: 'Company', value: 'Company' }
     ];
 
-    label = {
-        close,
-        downloadPfd,
-        price,
-        configurationHint,
-        priceAbsence,
-        selectConfiguration
+    labels = {
+        FIRST_NAME_TITLE,
+        LAST_NAME_TITLE,
+        CLOSE_BUTTON,
+        DOWNLOAD_PDF_BUTTON,
+        PRICE_TITLE,
+        SELECT_CONFIG_OPTION,
+        CONFIG_SELECT_PRICE_PROMPT,
+        PRICE_NOT_SPECIFIED,
+        COMPANY_WEBSITE_TITLE,
+        COMPANY_OR_INDIVIDUAL_TYPE_OPTION,
+        COMPANY_NAME_TITLE
     };
 
     lead = {
@@ -70,7 +80,7 @@ export default class CarDetail extends LightningElement {
         if (this.currentCurrency === 'usd') {
             return `${this.selectedProduct.PricebookEntries[0].UnitPrice} ${this.selectedProduct.PricebookEntries[0].CurrencyIsoCode}`;
         } else {
-            return `${this.selectedProduct.PriceByn__c}`;
+            return `${this.selectedProduct.PricebookEntries[0].PriceByn__c}`;
         }
     }
 

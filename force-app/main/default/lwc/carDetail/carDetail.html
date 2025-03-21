@@ -8,20 +8,20 @@
                         <p>Test Drive Request</p>
                     </header>
                     <main class="modal-body">
-                        <lightning-input label="First Name" required value={lead.firstName}
+                        <lightning-input label={labels.FIRST_NAME_TITLE} required value={lead.firstName}
                             onchange={handleFirstNameChange}></lightning-input>
-                        <lightning-input label="Last Name" required value={lead.lastName}
+                        <lightning-input label={labels.LAST_NAME_TITLE} required value={lead.lastName}
                             onchange={handleLastNameChange}></lightning-input>
 
-                        <lightning-radio-group label="Type" options={companyOptions} value={selectedType}
+                        <lightning-radio-group label={labels.COMPANY_OR_INDIVIDUAL_TYPE_OPTION} options={companyOptions} value={selectedType}
                             onchange={handleTypeChange} class="slds-m-vertical_small">
                         </lightning-radio-group>
 
                         <template if:true={isCompanySelected}>
-                            <lightning-input label="Company Name" required value={lead.company}
+                            <lightning-input label={labels.COMPANY_NAME_TITLE} required value={lead.company}
                                 onchange={handleCompanyChange}>
                             </lightning-input>
-                            <lightning-input type="url" label="Company Website" value={lead.website}
+                            <lightning-input type="url" label={labels.COMPANY_WEBSITE_TITLE} value={lead.website}
                                 onchange={handleWebsiteChange}>
                             </lightning-input>
                         </template>
@@ -52,18 +52,18 @@
                             <p>{productTemplate.Description}</p>
 
                             <lightning-combobox class="slds-p-vertical_medium" name="equipments"
-                                label={label.configurationHint} value={selectedEquipment} options={equipments}
-                                onchange={handleEquipmentChange} placeholder={label.selectConfiguration}>
+                                label={labels.CONFIG_SELECT_PRICE_PROMPT} value={selectedEquipment} options={equipments}
+                                onchange={handleEquipmentChange} placeholder={labels.SELECT_CONFIG_OPTION}>
                             </lightning-combobox>
 
                             <section class="price-container">
                                 <template if:true={selectedEquipment}>
                                     <template lwc:if={isPriceAvailable}>
                                         <section class="slds-grid">
-                                            <p class="slds-text-heading_medium slds-col"><strong>{label.price}:</strong>
+                                            <p class="slds-text-heading_medium slds-col"><strong>{labels.PRICE_TITLE}:</strong>
                                                 {selectedProductPrice}</p>
                                             <div class="slds-col slds-text-align_right">
-                                                <lightning-button label={label.downloadPfd} variant="brand"
+                                                <lightning-button label={labels.DOWNLOAD_PDF_BUTTON} variant="brand"
                                                     onclick={handleDownloadPdf}>
                                                 </lightning-button>
                                                 <lightning-button label="Test Drive" variant="brand"
@@ -73,14 +73,14 @@
                                         </section>
                                     </template>
                                     <template lwc:else>
-                                        <p class="slds-text-heading_medium"><strong>{label.priceAbsence}</strong></p>
+                                        <p class="slds-text-heading_medium"><strong>{labels.PRICE_NOT_SPECIFIED}</strong></p>
                                     </template>
                                 </template>
                             </section>
                         </template>
                     </main>
                     <footer class="modal-footer">
-                        <lightning-button label={label.close} variant="neutral"
+                        <lightning-button label={labels.CLOSE_BUTTON} variant="neutral"
                             onclick={handleClose}></lightning-button>
                     </footer>
                 </template>

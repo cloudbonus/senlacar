@@ -26,7 +26,7 @@
                         {!product.PricebookEntries[0].UnitPrice} {!product.PricebookEntries[0].CurrencyIsoCode}
                      </apex:outputPanel>
                      <apex:outputPanel rendered="{!$CurrentPage.parameters.currency == 'byn'}">
-                        {!product.PriceByn__c}
+                        {!product.PricebookEntries[0].PriceByn__c}
                     </apex:outputPanel>
                 </td>
             </tr>

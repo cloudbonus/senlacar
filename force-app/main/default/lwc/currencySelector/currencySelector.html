@@ -1,5 +1,5 @@
 <template>
-    <lightning-combobox name="currency" label="Currency" value={selectedCurrency} placeholder="Select Currency"
+    <lightning-combobox name="currency" label={labels.CURRENCY_TITLE} value={selectedCurrency} placeholder={labels.SELECT_CURRENCY_OPTION}
         options={currencyOptions} onchange={handleCurrencyChange}>
     </lightning-combobox>
 </template>
