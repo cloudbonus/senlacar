@@ -11,16 +11,16 @@
         <table>
 
             <tr>
-                <th><strong>{!$Label.configuration}:</strong></th>
+                <th><strong>{!$Label.Config_Title}:</strong></th>
                 <td>{!product.Equipment__c}</td>
             </tr>
 
             <tr>
-                <th><strong>{!$Label.description}:</strong></th>
+                <th><strong>{!$Label.Description_Title}:</strong></th>
                 <td>{!product.Description}</td>
             </tr>
             <tr>
-                <th><strong>{!$Label.price}:</strong></th>
+                <th><strong>{!$Label.Price_Title}:</strong></th>
                 <td>
                     <apex:outputPanel rendered="{!OR($CurrentPage.parameters.currency == 'usd', ISNULL($CurrentPage.parameters.currency))}">
                         {!product.PricebookEntries[0].UnitPrice} {!product.PricebookEntries[0].CurrencyIsoCode}
